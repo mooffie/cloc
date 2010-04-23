@@ -1,0 +1,69 @@
+#!/usr/bin/env ruby
+
+begin
+  # If we were installed as a gem we can just:
+  require 'cloc'
+rescue LoadError
+  # No, we weren't installed as a gem. Let's try to make Ruby aware
+  # of our library folder.
+  lib = File.join(File.dirname(__FILE__), '..', 'lib')
+  $: << lib
+  require 'cloc'
+end
+
+require 'optparse'
+
+SETTINGS = { :version => Cloc::Database.default_version }
+
+def process_files
+  db = Cloc::Database.new SETTINGS[:version]
+  linker = Cloc::Linker.new
+  ARGV.each do |file|
+    if File.directory? file
+      Dir.glob(File.join(file, '**', '*.[cy]')).each do |file|
+        linker.process_file file
+      end
+    else
+      linker.process_file file
+    end
+  end
+  linker.resolve_non_static_functions
+  linker.remove_missing
+  db.merge linker.data
+  db.save
+end
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: cloc [options] files-or-folders ...'
+  opts.separator ''
+  opts.separator <<EOS
+'cloc' is a program that locates Ruby methods in C source files and
+records their location (filepath + line number) in ~/.cloc-VERSION.yaml
+
+Since you may have several different versions of Ruby's source code on
+your system, cloc's data file has a "version" embedded in it. E.g.,
+~/.cloc-1.8.7 and ~/.cloc-1.9.1. You may specify the version to work
+with with the '-v' switch.
+
+Options:
+EOS
+  opts.on('-v', '--version [VERSION]', "Select the version (default: #{SETTINGS[:version]}).") do |v|
+    SETTINGS[:version] = v
+  end
+  opts.on('-p', '--pp', 'Print out the database contents and exit.') do
+    require 'pp'
+    pp Cloc::Database.new(SETTINGS[:version]).data
+    exit
+  end
+  opts.on('-w', '--warnings', "Show warnings") do |v|
+    SETTINGS[:version] = v
+  end
+end.parse!
+
+if ARGV.empty?
+  puts "No file(s) or folder(s) specified. Nothing to do. Exiting"
+  puts "Invoke with `--help' for help."
+  exit
+else
+  process_files
+end
