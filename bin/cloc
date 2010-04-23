@@ -37,18 +37,27 @@ OptionParser.new do |opts|
   opts.banner = 'Usage: cloc [options] files-or-folders ...'
   opts.separator ''
   opts.separator <<EOS
+DESCRIPTION
+
 'cloc' is a program that locates Ruby methods in C source files and
-records their location (filepath + line number) in ~/.cloc-VERSION.yaml
+records their location (filepath + line number) in ~/.cloc-VERSION
+
+VERSIONS
 
 Since you may have several different versions of Ruby's source code on
 your system, cloc's data file has a "version" embedded in it. E.g.,
-~/.cloc-1.8.7 and ~/.cloc-1.9.1. You may specify the version to work
-with with the '-v' switch.
+~/.cloc-1.8.7 and ~/.cloc-1.9.1. It's up to you to decide on these version
+strings (they have absolutely no meaning for cloc). You may specify the
+version to work with with the '-v' switch.
 
 Options:
 EOS
   opts.on('-v', '--version [VERSION]', "Select the version (default: #{SETTINGS[:version]}).") do |v|
     SETTINGS[:version] = v
+  end
+  opts.on('-l', '--list', 'List existing versions and exit.') do
+    p Cloc::Database.versions
+    exit
   end
   opts.on('-p', '--pp', 'Print out the database contents and exit.') do
     require 'pp'
