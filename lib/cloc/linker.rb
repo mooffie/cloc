@@ -11,7 +11,7 @@ module Cloc
     end
 
     def process_file(pathname)
-      puts "Processing #{pathname} ...\n#"
+      puts "Processing #{pathname} ..."
       src = FileSource.new(pathname)
       src.refs.each do |klass, rmethod, cfunc|
         if @table[klass]
@@ -52,7 +52,7 @@ module Cloc
       @table.each_pair do |klass, methods_table|
         methods_table.each_pair do |method, location_or_cfunction|
           if location_or_cfunction.is_a? String
-            puts "Couldn't resolve #{klass}##{method}"
+            puts "-- Couldn't resolve #{klass}##{method}" if Cloc.warn?
             methods_table.delete(method)
           end
         end

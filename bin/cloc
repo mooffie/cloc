@@ -64,8 +64,8 @@ EOS
     pp Cloc::Database.new(SETTINGS[:version]).data
     exit
   end
-  opts.on('-w', '--warnings', "Show warnings") do |v|
-    SETTINGS[:version] = v
+  opts.on('-w', '--warnings', "Show warnings (these are usually harmless).") do
+    Cloc.warn = true
   end
 end.parse!
 

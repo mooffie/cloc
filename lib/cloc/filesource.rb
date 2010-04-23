@@ -80,6 +80,7 @@ module Cloc
 
     # Returns a list of all the method definitions.
     def refs
+      errors = {}
       list = []
       source.scan( / (rb_define_method|rb_define_private_method|rb_define_singleton_method|rb_define_module_function)
                        \(
@@ -97,7 +98,13 @@ module Cloc
             list << [klass, rfunc, cfunc]
           end
         rescue NmNtFnd
-          puts "Couldn't find '#{cvar}'"
+          errors[cvar] = true
+        end
+      end
+
+      if Cloc.warn?
+        errors.keys.each do |cvar|
+          puts "-- Couldn't find variable '#{cvar}'"
         end
       end
 
@@ -106,4 +113,3 @@ module Cloc
   end
 
 end
-

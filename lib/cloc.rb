@@ -2,7 +2,8 @@
 module Cloc
 
   class << self
-    attr :warn
+    # Whether to warn of various things (parsing/linking problems).
+    attr_accessor :warn
     alias warn? warn
   end
 
