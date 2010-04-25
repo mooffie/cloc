@@ -6,13 +6,8 @@ module Cloc
   class Database
 
     # Find all existing versions.
-    #
-    # The "default version" is also added to the list.
     def self.versions
-      return @versions if defined? @versions
-      @versions = Dir.entries(HOME).grep(/^.cloc-(.*)/) { $1 }
-      @versions << RUBY_VERSION if @versions.empty?
-      @versions.sort!
+      @versions ||= Dir.entries(HOME).grep(/^.cloc-(.*)/) { $1 }.sort
     end
 
     # Pick a default version.
