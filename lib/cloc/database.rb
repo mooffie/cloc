@@ -40,8 +40,10 @@ module Cloc
     # Returned value is either [ path_to_file, line_number ], or nil if
     # the method isn't known.
     def lookup(object_name, method_name)
-      if @table[object_name] and @table[object_name][method_name]
-        return @table[object_name][method_name]
+      if @table[object_name] and (loc = @table[object_name][method_name])
+        # Since the pathname is stored as a symbol, we convert
+        # it back to a string.
+        return [loc[0].to_s, loc[1]]
       end
     end
 

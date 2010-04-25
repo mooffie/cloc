@@ -12,6 +12,10 @@ module Cloc
 
     def process_file(pathname)
       puts "Processing #{pathname} ..."
+      # Since same pathnames appear many many times, we store them as
+      # symbols to conserve memory.
+      absolute_pathname = File.expand_path(pathname).to_sym
+
       src = FileSource.new(pathname)
       src.refs.each do |klass, rmethod, cfunc|
         if @table[klass]
@@ -22,7 +26,7 @@ module Cloc
         klass[rmethod] = begin
           if src.cfunctions[cfunc]
             # Resolve static methods.
-            [ File.expand_path(pathname), src.cfunctions[cfunc] ]
+            [ absolute_pathname, src.cfunctions[cfunc] ]
           else
             # Postpone to later.
             cfunc
@@ -32,7 +36,7 @@ module Cloc
 
       # Save non-static functions for later.
       src.cfunctions.each_pair do |cfunc, lineno|
-        @non_static_functions[cfunc] = [ File.expand_path(pathname), lineno ]
+        @non_static_functions[cfunc] = [ absolute_pathname, lineno ]
       end
     end
 
