@@ -52,7 +52,7 @@ version to work with with the '-v' switch.
 
 Options:
 EOS
-  opts.on('-v', '--version [VERSION]', "Select the version (default: #{SETTINGS[:version]}).") do |v|
+  opts.on('-v', '--version VERSION', "Select the version (default: #{SETTINGS[:version]}).") do |v|
     SETTINGS[:version] = v
   end
   opts.on('-l', '--list', 'List existing versions and exit.') do
