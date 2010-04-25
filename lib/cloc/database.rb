@@ -35,6 +35,16 @@ module Cloc
       @table
     end
 
+    # Returns the source-code location where a method is defined.
+    #
+    # Returned value is either [ path_to_file, line_number ], or nil if
+    # the method isn't known.
+    def lookup(object_name, method_name)
+      if @table[object_name] and @table[object_name][method_name]
+        return @table[object_name][method_name]
+      end
+    end
+
     def path
       File.join(HOME, ".cloc-#{@version}")
     end
