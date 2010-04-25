@@ -50,7 +50,7 @@ your system, cloc's data file has a "version" embedded in it. E.g.,
 strings (they have absolutely no meaning for cloc). You may specify the
 version to work with with the '-v' switch.
 
-Options:
+Common options:
 EOS
   opts.on('-v', '--version VERSION', "Select the version (default: #{SETTINGS[:version]}).") do |v|
     SETTINGS[:version] = v
@@ -59,6 +59,10 @@ EOS
     p Cloc::Database.versions
     exit
   end
+
+  opts.separator ''
+  opts.separator 'Debugging options:'
+
   opts.on('-p', '--pp', 'Print out the database contents and exit.') do
     require 'pp'
     pp Cloc::Database.new(SETTINGS[:version]).data
@@ -66,6 +70,16 @@ EOS
   end
   opts.on('-w', '--warnings', "Show warnings (these are usually harmless).") do
     Cloc.warn = true
+  end
+  opts.on('-b', 'Print out the process memory consumption (linux only).', 'and do some benchmarking.') do
+    system("ps -p #{$$} -o vsz,rss,cmd")
+    db = Cloc::Database.new(SETTINGS[:version])
+    system("ps -p #{$$} -o vsz,rss,cmd")
+    require 'benchmark'
+    Benchmark.bm do |x|
+      x.report { 10.times { db.load } }
+    end
+    exit
   end
 end.parse!
 
